@@ -1,0 +1,30 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig(({ mode }) => ({
+  plugins: [react()],
+  define: {
+    'process.env.API_KEY': JSON.stringify(process.env.API_KEY),
+  },
+  server: {
+    host: true,
+  },
+  // Production optimization: remove console and debugger
+  esbuild: {
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
+  },
+  build: {
+    outDir: 'dist',
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'genai-vendor': ['@google/genai']
+        },
+      },
+    },
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000,
+  }
+}));
